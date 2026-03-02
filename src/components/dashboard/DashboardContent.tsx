@@ -58,9 +58,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                 .reduce((acc, d) => acc + d.total, 0);
 
             const growth = prevVal > 0 ? ((curVal - prevVal) / prevVal) * 100 : 0;
-            const meta = prevVal > 0 ? prevVal * 1.15 : (curVal > 0 ? curVal * 1.1 : 1200000);
-
-            return { mes: month, current: curVal, previous: prevVal, growth, meta };
+            return { mes: month, current: curVal, previous: prevVal, growth };
         });
 
         const optoStats: Record<string, { total: number, qty: number }> = {};
@@ -141,7 +139,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
     } = stats;
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 bg-[#f8fafc] dark:bg-slate-950 p-4 md:p-8 min-h-screen">
+        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 bg-[#f8fafc] dark:bg-slate-950 p-3 md:p-6 lg:p-8 min-h-screen">
 
             {/* Sidebar-style Filters */}
             <motion.aside
@@ -268,7 +266,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                         previousYear={previousYear}
                     />
                 </motion.div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

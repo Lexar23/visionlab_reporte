@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 interface ChartsProps {
     salesByBranch: { sucursal: string; total: number }[];
     qualityRatios: { name: string; value: number }[];
-    salesByMonth: { mes: string; current: number; previous: number; growth: number; meta: number }[];
+    salesByMonth: { mes: string; current: number; previous: number; growth: number }[];
     statusDistribution: { name: string; value: number }[];
     topOptometrasTotal: { name: string; total: number }[];
     topOptometrasQty: { name: string; qty: number }[];
@@ -78,33 +78,40 @@ export function ChartsSection({
         <div className="grid grid-cols-12 gap-6 mt-8">
 
             {/* SECTION 1: Comparison Table */}
-            <div className="col-span-12 h-[520px]">
-                <Card className={cn(cardBg, "h-full flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
-                    <div className="p-6 border-b border-slate-200 dark:border-white/5 grid grid-cols-5 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">
-                        <span className="text-left">Mes Fiscal</span>
-                        <span>Ventas {previousYear}</span>
-                        <span>Ventas {currentYear}</span>
-                        <span>Crecimiento</span>
-                        <span>Meta ¢</span>
+            <div className="col-span-12">
+                <Card className={cn(cardBg, "flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
+                    <div className="p-6 border-b border-slate-200 dark:border-white/5">
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 italic">Comparativa Mensual de Ventas</h3>
                     </div>
-                    <div className="flex-1 overflow-y-auto scrollbar-hide">
-                        {salesByMonth.map((row, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ x: -10, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ delay: i * 0.05 }}
-                                className="grid grid-cols-5 text-center p-4 text-xs group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors border-b border-slate-100 dark:border-white/[0.02]"
-                            >
-                                <span className="text-left font-black text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">{row.mes}</span>
-                                <span className="font-medium text-slate-400 dark:text-slate-500 italic">¢{row.previous.toLocaleString()}</span>
-                                <span className="font-black text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5 rounded-lg py-1 px-2 border border-slate-200 dark:border-white/5">¢{row.current.toLocaleString()}</span>
-                                <span className={`font-black flex items-center justify-center gap-1 ${row.growth >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                                    {row.growth >= 0 ? '↑' : '↓'} {Math.abs(row.growth).toFixed(1)}%
-                                </span>
-                                <span className="text-slate-400 dark:text-slate-600 font-medium">¢{row.meta.toLocaleString()}</span>
-                            </motion.div>
-                        ))}
+                    <div className="w-full">
+                        <div className="px-4 md:px-6 py-4 bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/5 grid grid-cols-4 text-[9px] md:text-[10px] font-black uppercase tracking-tight md:tracking-widest text-slate-500 text-center items-center">
+                            <span className="text-left font-black">Mes</span>
+                            <span className="truncate px-1">Ventas {previousYear.slice(-2)}'</span>
+                            <span className="truncate px-1">Ventas {currentYear.slice(-2)}'</span>
+                            <span className="truncate">Crec.</span>
+                        </div>
+                        <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
+                            {salesByMonth.map((row, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ x: -10, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="grid grid-cols-4 text-center p-3 md:p-4 text-[10px] md:text-xs group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors border-b border-slate-100 dark:border-white/[0.02] items-center"
+                                >
+                                    <span className="text-left font-black text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors truncate">{row.mes}</span>
+                                    <span className="font-medium text-slate-400 dark:text-slate-500 italic truncate tracking-tighter md:tracking-normal">¢{row.previous.toLocaleString()}</span>
+                                    <div className="flex justify-center overflow-hidden">
+                                        <span className="font-black text-slate-900 dark:text-white bg-slate-100 dark:bg-white/5 rounded-lg py-1 px-1.5 md:px-3 border border-slate-200 dark:border-white/5 truncate tracking-tighter md:tracking-normal">
+                                            ¢{row.current.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <span className={`font-black flex items-center justify-center gap-0.5 md:gap-1 ${row.growth >= 0 ? 'text-emerald-500' : 'text-rose-500'} text-[9px] md:text-xs`}>
+                                        {row.growth >= 0 ? '↑' : '↓'}{Math.abs(row.growth).toFixed(0)}%
+                                    </span>
+                                </motion.div>
+                            ))}
+                        </div>
                     </div>
                 </Card>
             </div>
@@ -112,9 +119,9 @@ export function ChartsSection({
             {/* GRID OF 4 PIE CHARTS */}
 
             {/* 1. Lentes por diseño */}
-            <div className="col-span-12 lg:col-span-6 h-[500px]">
+            <div className="col-span-12 lg:col-span-6 min-h-[450px] lg:h-[500px]">
                 <Card className={cn(cardBg, "h-full flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
-                    <div className="p-6 border-b border-slate-200 dark:border-white/5">
+                    <div className="p-4 md:p-6 border-b border-slate-200 dark:border-white/5">
                         <h3 className={cn(textMain, "text-sm font-black uppercase tracking-widest italic text-center")}>Lentes por diseño</h3>
                     </div>
                     <div className="flex-1 p-4 flex flex-col items-center justify-center">
@@ -140,7 +147,7 @@ export function ChartsSection({
                             </ResponsiveContainer>
                         </div>
                         <div className="w-full px-4 mt-8">
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                                 {sortedDesigns.map((item, index) => (
                                     <div key={index} className="flex items-center gap-3">
                                         <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
@@ -157,9 +164,9 @@ export function ChartsSection({
             </div>
 
             {/* 2. Porcentaje de Vendedores */}
-            <div className="col-span-12 lg:col-span-6 h-[500px]">
+            <div className="col-span-12 lg:col-span-6 min-h-[450px] lg:h-[500px]">
                 <Card className={cn(cardBg, "h-full flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
-                    <div className="p-6 border-b border-slate-200 dark:border-white/5">
+                    <div className="p-4 md:p-6 border-b border-slate-200 dark:border-white/5">
                         <h3 className={cn(textMain, "text-sm font-black uppercase tracking-widest italic text-center")}>Porcentaje de Vendedores</h3>
                     </div>
                     <div className="flex-1 p-4 flex flex-col items-center justify-center">
@@ -185,7 +192,7 @@ export function ChartsSection({
                             </ResponsiveContainer>
                         </div>
                         <div className="w-full px-4 mt-8">
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                                 {sortedOptos.map((item, index) => {
                                     const percent = ((item.total / totalOptos) * 100).toFixed(0);
                                     return (
@@ -205,9 +212,9 @@ export function ChartsSection({
             </div>
 
             {/* 3. Ventas por Sucursal */}
-            <div className="col-span-12 lg:col-span-6 h-[500px]">
+            <div className="col-span-12 lg:col-span-6 min-h-[450px] lg:h-[500px]">
                 <Card className={cn(cardBg, "h-full flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
-                    <div className="p-6 border-b border-slate-200 dark:border-white/5">
+                    <div className="p-4 md:p-6 border-b border-slate-200 dark:border-white/5">
                         <h3 className={cn(textMain, "text-sm font-black uppercase tracking-widest italic text-center")}>Ventas por Sucursal</h3>
                     </div>
                     <div className="flex-1 p-4 flex flex-col items-center justify-center">
@@ -233,7 +240,7 @@ export function ChartsSection({
                             </ResponsiveContainer>
                         </div>
                         <div className="w-full px-4 mt-8">
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                                 {sortedBranches.map((item, index) => {
                                     const percent = ((item.total / totalBranches) * 100).toFixed(0);
                                     return (
@@ -253,9 +260,9 @@ export function ChartsSection({
             </div>
 
             {/* 4. Calidad del Laboratorio (Buenos vs Retrabajos) */}
-            <div className="col-span-12 lg:col-span-6 h-[500px]">
+            <div className="col-span-12 lg:col-span-6 min-h-[450px] lg:h-[500px]">
                 <Card className={cn(cardBg, "h-full flex flex-col shadow-2xl overflow-hidden rounded-[2.5rem]")}>
-                    <div className="p-6 border-b border-slate-200 dark:border-white/5">
+                    <div className="p-4 md:p-6 border-b border-slate-200 dark:border-white/5">
                         <h3 className={cn(textMain, "text-sm font-black uppercase tracking-widest italic text-center")}>Calidad del Laboratorio</h3>
                     </div>
                     <div className="flex-1 p-4 flex flex-col items-center justify-center">
@@ -341,7 +348,7 @@ export function ChartsSection({
             {/* FOOTER STATS: Big Impact Numbers */}
             <motion.div
                 whileHover={{ scale: 1.01 }}
-                className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8 py-10 px-12 bg-gradient-to-br from-white dark:from-slate-900/80 to-slate-50 dark:to-slate-950 border border-slate-200 dark:border-white/5 rounded-[3rem] shadow-xl dark:shadow-[0_0_50px_-12px_rgba(59,130,246,0.1)] relative overflow-hidden"
+                className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-8 md:py-10 px-6 md:px-12 bg-gradient-to-br from-white dark:from-slate-900/80 to-slate-50 dark:to-slate-950 border border-slate-200 dark:border-white/5 rounded-[2rem] md:rounded-[3rem] shadow-xl dark:shadow-[0_0_50px_-12px_rgba(59,130,246,0.1)] relative overflow-hidden"
             >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32" />
 

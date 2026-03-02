@@ -64,81 +64,67 @@ export function DataDisplay({ data }: TableProps) {
                 </div>
             </div>
 
-            <Card className="bg-white dark:bg-slate-900/50 backdrop-blur-xl border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+            <Card className="bg-white dark:bg-slate-900/50 backdrop-blur-xl border-slate-200 dark:border-white/5 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl">
+                <div className="w-full overflow-hidden">
+                    <table className="w-full text-left border-collapse table-fixed">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-white/5">
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Factura</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">N° Orden</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Cliente</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Servicio</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Cant</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Sucursal</th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">
-                                    <div className="flex flex-col items-center gap-1">
-                                        <span>Calidad</span>
-                                        {totalReworksCount > 0 && (
-                                            <span className="bg-rose-500 text-white px-2 py-0.5 rounded-full text-[8px] font-black uppercase">
-                                                {totalReworksCount} Total
-                                            </span>
-                                        )}
-                                    </div>
-                                </th>
-                                <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-500">Total</th>
+                                <th className="w-[18%] md:w-[12%] px-2 md:px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-tight text-slate-500">Fact.</th>
+                                <th className="hidden xl:table-cell w-[10%] px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Orden</th>
+                                <th className="w-[45%] md:w-[25%] px-2 md:px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-tight text-slate-500">Cliente</th>
+                                <th className="hidden lg:table-cell w-[15%] px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Servicio</th>
+                                <th className="hidden md:table-cell w-[8%] px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Cant</th>
+                                <th className="hidden lg:table-cell w-[12%] px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Sucu.</th>
+                                <th className="w-[12%] md:w-[10%] px-1 md:px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-tight text-slate-500 text-center">QC</th>
+                                <th className="w-[25%] md:w-[18%] px-2 md:px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-tight text-slate-500 text-right">Total</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.02]">
                             {filteredData.length > 0 ? filteredData.slice(0, 100).map((item, i) => (
                                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
-                                    <td className="px-6 py-5 font-black text-slate-600 dark:text-slate-300">#{item.factura}</td>
-                                    <td className="px-6 py-5">
-                                        <span className="text-[11px] font-black text-primary bg-primary/5 py-1 px-2 rounded-lg border border-primary/10">
+                                    <td className="px-2 md:px-6 py-3 font-black text-slate-600 dark:text-slate-300 text-[10px] md:text-sm truncate">
+                                        #{item.factura}
+                                    </td>
+                                    <td className="hidden xl:table-cell px-6 py-3">
+                                        <span className="text-[10px] font-black text-primary bg-primary/5 py-0.5 px-2 rounded-lg border border-primary/10">
                                             {item.ordenProduccion || '—'}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors max-w-[200px] truncate">{item.cliente}</p>
+                                    <td className="px-2 md:px-6 py-3">
+                                        <p className="text-[10px] md:text-sm font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">{item.cliente}</p>
+                                        <p className="text-[8px] text-slate-400 font-bold uppercase lg:hidden truncate">{item.sucursal}</p>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <span className="text-[10px] font-black py-1 px-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 uppercase">
+                                    <td className="hidden lg:table-cell px-6 py-3">
+                                        <span className="text-[9px] font-black py-0.5 px-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 uppercase truncate">
                                             {item.servicioArticulo}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-5 text-center">
-                                        <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-black text-slate-700 dark:text-white border border-slate-200 dark:border-white/5">
+                                    <td className="hidden md:table-cell px-6 py-3 text-center">
+                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-50 dark:bg-slate-800 text-[10px] font-black text-slate-600 dark:text-white border border-slate-100 dark:border-white/5">
                                             {item.cantidad}
-                                        </div>
+                                        </span>
                                     </td>
-                                    <td className="px-6 py-5">
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase truncate max-w-[150px]">{item.sucursal}</p>
+                                    <td className="hidden lg:table-cell px-6 py-3">
+                                        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase truncate">{item.sucursal}</p>
                                     </td>
-                                    <td className="px-6 py-5 text-center">
+                                    <td className="px-1 md:px-6 py-3 text-center">
                                         {item.retrabajo ? (
                                             <div className="flex justify-center">
-                                                <div
-                                                    title={`Esta orden tiene ${item.cantidadRetrabajo || item.cantidad} lentes en retrabajo`}
-                                                    className="flex items-center gap-1.5 bg-rose-500/10 text-rose-500 px-3 py-1.5 rounded-xl border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-lg shadow-rose-500/5 dark:shadow-rose-500/20"
-                                                >
+                                                <div className="p-1 md:px-3 md:py-1.5 bg-rose-500/10 text-rose-500 rounded-lg border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white transition-all">
                                                     <AlertCircle className="w-3 h-3" />
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter italic">
-                                                        {item.cantidadRetrabajo || '1'} {item.cantidadRetrabajo === 1 ? 'Retrabajo' : 'Retrabajos'}
-                                                    </span>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="flex justify-center">
-                                                <span className="text-slate-300 dark:text-slate-800 font-black">—</span>
-                                            </div>
+                                            <span className="text-slate-200 dark:text-slate-800 font-black">—</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-5 text-[13px] font-black text-slate-900 dark:text-white italic">
+                                    <td className="px-2 md:px-6 py-3 text-[10px] md:text-xs font-black text-slate-900 dark:text-white italic text-right truncate">
                                         ¢{item.total.toLocaleString()}
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-20 text-center text-slate-600 font-bold uppercase tracking-widest">
+                                    <td colSpan={8} className="px-6 py-20 text-center text-slate-600 font-bold uppercase tracking-widest text-xs">
                                         No se encontraron registros...
                                     </td>
                                 </tr>

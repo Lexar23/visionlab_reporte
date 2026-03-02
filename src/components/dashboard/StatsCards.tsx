@@ -53,10 +53,10 @@ export function StatsCards({ totalVentas, totalFacturas, retrabajos, sucursalMas
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {stats.map((stat, i) => (
                 <Card key={i} className={cn(
-                    "bg-white/50 dark:bg-slate-900/60 backdrop-blur border p-3 rounded-2xl transition-all hover:scale-[1.02] hover:bg-white/80 dark:hover:bg-slate-800/50",
+                    "bg-white/50 dark:bg-slate-900/60 backdrop-blur border p-4 lg:p-5 rounded-2xl transition-all hover:scale-[1.02] hover:bg-white/80 dark:hover:bg-slate-800/50",
                     stat.border
                 )}>
                     <div className="flex items-center gap-3">
