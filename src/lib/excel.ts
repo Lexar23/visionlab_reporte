@@ -31,7 +31,8 @@ export async function getReportData(): Promise<ReportData[]> {
             cantidad: typeof row[10] === 'number' ? row[10] : 0,
             servicioArticulo: String(row[9] || 'N/A'),
             ordenProduccion: String(row[8] || ''),
-            retrabajo: !!row[19] && String(row[19]).trim() !== '' && String(row[19]) !== 'N/A',
-            optometra: String(row[20] || row[19] || 'Desconocido').trim(),
+            retrabajo: !!row[16] && String(row[16]).trim() !== '' && String(row[16]) !== 'N/A',
+            cantidadRetrabajo: typeof row[17] === 'number' ? row[17] : 0,
+            optometra: String(row[20] || 'Desconocido').trim(),
         }));
 }

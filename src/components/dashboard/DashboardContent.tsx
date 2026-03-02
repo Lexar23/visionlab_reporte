@@ -51,10 +51,10 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
 
         const comparison = MONTH_NAMES.map((month, idx) => {
             const curVal = currentYearData
-                .filter(d => d.fecha.getMonth() === idx)
+                .filter(d => d.fecha.getMonth() === idx && !d.retrabajo)
                 .reduce((acc, d) => acc + d.total, 0);
             const prevVal = previousYearData
-                .filter(d => d.fecha.getMonth() === idx)
+                .filter(d => d.fecha.getMonth() === idx && !d.retrabajo)
                 .reduce((acc, d) => acc + d.total, 0);
 
             const growth = prevVal > 0 ? ((curVal - prevVal) / prevVal) * 100 : 0;
@@ -67,7 +67,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
         fData.forEach(d => {
             const name = d.optometra || 'Desconocido';
             if (!optoStats[name]) optoStats[name] = { total: 0, qty: 0 };
-            optoStats[name].total += d.total;
+            if (!d.retrabajo) optoStats[name].total += d.total;
             optoStats[name].qty += d.cantidad;
         });
 
@@ -92,13 +92,24 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
         const branchSalesMap: Record<string, number> = {};
         fData.forEach(d => {
             const branch = d.sucursal || 'N/A';
-            branchSalesMap[branch] = (branchSalesMap[branch] || 0) + d.total;
+            if (!d.retrabajo) {
+                branchSalesMap[branch] = (branchSalesMap[branch] || 0) + d.total;
+            }
         });
 
         const branchStatsArr = Object.entries(branchSalesMap)
             .map(([name, total]) => ({ sucursal: name, total }))
             .sort((a, b) => b.total - a.total)
             .slice(0, 8);
+
+        const totalRecords = fData.length;
+        const reworksCount = fData.filter(d => d.retrabajo).length;
+        const goodCount = totalRecords - reworksCount;
+
+        const qualityRatios = [
+            { name: 'Lentes Buenos', value: goodCount },
+            { name: 'Retrabajos', value: reworksCount }
+        ];
 
         const bestBranch = branchStatsArr[0]?.sucursal || 'N/A';
 
@@ -109,7 +120,10 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
             topOptometrasQty: [...sortedOptos].sort((a, b) => b.qty - a.qty),
             designDistribution: designDist,
             sucursalLider: bestBranch,
-            salesByBranch: branchStatsArr
+            salesByBranch: branchStatsArr,
+            qualityRatios,
+            currentYear,
+            previousYear
         };
     }, [initialData, selectedYear, selectedMonth, years]);
 
@@ -120,11 +134,14 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
         topOptometrasQty,
         designDistribution,
         sucursalLider,
-        salesByBranch
+        salesByBranch,
+        qualityRatios,
+        currentYear,
+        previousYear
     } = stats;
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 bg-slate-950 p-4 md:p-8 min-h-screen">
+        <div className="flex flex-col lg:flex-row gap-8 bg-[#f8fafc] dark:bg-slate-950 p-4 md:p-8 min-h-screen">
 
             {/* Sidebar-style Filters */}
             <motion.aside
@@ -132,11 +149,11 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                 animate={{ x: 0, opacity: 1 }}
                 className="w-full lg:w-72 space-y-4"
             >
-                <div className="p-6 bg-slate-900/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] sticky top-24 shadow-2xl overflow-hidden group">
+                <div className="p-6 bg-white dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200 dark:border-white/5 rounded-[2rem] sticky top-24 shadow-2xl overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
 
                     <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3 text-white">
+                        <div className="flex items-center gap-3 text-slate-900 dark:text-white">
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <LayoutDashboard className="w-5 h-5 text-primary" />
                             </div>
@@ -157,7 +174,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
 
                     <div className="space-y-8">
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] flex items-center gap-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[0.2em] flex items-center gap-2">
                                 <Calendar className="w-3 h-3" /> Selección de Año
                             </label>
                             <div className="grid grid-cols-2 gap-2">
@@ -167,7 +184,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                                         onClick={() => setSelectedYear(y)}
                                         className={`group flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-black transition-all border ${selectedYear === y
                                             ? 'bg-primary border-primary/20 text-white shadow-xl shadow-primary/30 scale-[1.02]'
-                                            : 'bg-slate-800/50 border-white/5 text-slate-400 hover:border-white/10 hover:bg-slate-800'
+                                            : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:border-slate-200 dark:hover:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800'
                                             }`}
                                     >
                                         {y}
@@ -178,7 +195,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] flex items-center gap-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[0.2em] flex items-center gap-2">
                                 <Filter className="w-3 h-3" /> Selección de Mes
                             </label>
                             <div className="grid grid-cols-2 gap-2">
@@ -186,7 +203,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                                     onClick={() => setSelectedMonth("all")}
                                     className={`col-span-2 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedMonth === "all"
                                         ? 'bg-emerald-500 border-emerald-500/20 text-white shadow-xl shadow-emerald-500/20'
-                                        : 'bg-slate-800/50 border-white/5 text-slate-400 hover:border-white/10'
+                                        : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:border-slate-200 dark:hover:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800'
                                         }`}
                                 >
                                     Resumen Anual
@@ -196,8 +213,8 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                                         key={i}
                                         onClick={() => setSelectedMonth(i.toString())}
                                         className={`px-3 py-3 rounded-xl text-[10px] font-black uppercase transition-all border ${selectedMonth === i.toString()
-                                            ? 'bg-white border-white text-slate-950 scale-[1.02] shadow-lg'
-                                            : 'bg-slate-800/30 border-white/5 text-slate-500 hover:text-white hover:border-white/10 hover:bg-slate-800'
+                                            ? 'bg-primary dark:bg-white border-primary dark:border-white text-white dark:text-slate-950 scale-[1.02] shadow-lg'
+                                            : 'bg-slate-50 dark:bg-slate-800/30 border-slate-100 dark:border-white/5 text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-200 dark:hover:border-white/10 hover:bg-slate-100 dark:hover:bg-slate-800'
                                             }`}
                                     >
                                         {m}
@@ -207,10 +224,10 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                         </div>
                     </div>
 
-                    <div className="mt-12 pt-8 border-t border-white/5">
-                        <div className="rounded-2xl bg-gradient-to-br from-primary/20 to-transparent p-4 border border-primary/10">
+                    <div className="mt-12 pt-8 border-t border-slate-100 dark:border-white/5">
+                        <div className="rounded-2xl bg-gradient-to-br from-primary/10 dark:from-primary/20 to-transparent p-4 border border-primary/10">
                             <p className="text-[10px] text-primary font-black uppercase mb-1">Status del Sistema</p>
-                            <p className="text-white text-xs font-bold flex items-center gap-2">
+                            <p className="text-slate-900 dark:text-white text-xs font-bold flex items-center gap-2">
                                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                                 Conectado al Reporte
                             </p>
@@ -227,7 +244,7 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                     transition={{ delay: 0.1 }}
                 >
                     <StatsCards
-                        totalVentas={filteredData.reduce((acc, d) => acc + d.total, 0)}
+                        totalVentas={filteredData.filter(d => !d.retrabajo).reduce((acc, d) => acc + d.total, 0)}
                         totalFacturas={filteredData.length}
                         retrabajos={filteredData.filter(d => d.retrabajo).length}
                         sucursalMasActiva={sucursalLider}
@@ -241,11 +258,14 @@ export function DashboardContent({ initialData }: DashboardContentProps) {
                 >
                     <ChartsSection
                         salesByBranch={salesByBranch}
+                        qualityRatios={qualityRatios}
                         salesByMonth={salesByMonthComparison}
                         statusDistribution={[]}
                         topOptometrasTotal={topOptometrasTotal}
                         topOptometrasQty={topOptometrasQty}
                         designDistribution={designDistribution}
+                        currentYear={currentYear}
+                        previousYear={previousYear}
                     />
                 </motion.div>
             </main>

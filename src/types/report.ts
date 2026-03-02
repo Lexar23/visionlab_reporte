@@ -9,6 +9,7 @@ export interface ReportData {
     servicioArticulo: string;
     ordenProduccion?: string;
     retrabajo: boolean;
+    cantidadRetrabajo: number;
     comentariosRetrabajo?: string;
     optometra: string;
 }
